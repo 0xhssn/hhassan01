@@ -1,0 +1,64 @@
+{
+  "name": "hamza-hassan-portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio and profile for Hamza Hassan — software (product) engineer specializing in AI, blockchain, and Web3.",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "gatsby:dev": "gatsby develop",
+    "gatsby:build": "gatsby build",
+    "gatsby:serve": "gatsby serve",
+    "nest:start": "nest start",
+    "nest:dev": "nest start --watch",
+    "nest:build": "nest build"
+  },
+  "dependencies": {
+    "next": "^16.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "gatsby": "^5.16.1",
+    "@nestjs/common": "^11.1.17",
+    "@nestjs/core": "^11.1.17",
+    "@nestjs/platform-express": "^11.1.17",
+    "graphql": "^16.10.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@nestjs/cli": "^11.0.7",
+    "@nestjs/schematics": "^11.0.5",
+    "@nestjs/testing": "^11.1.17",
+    "eslint": "^9.23.0",
+    "eslint-config-next": "^16.0.3",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "nestjs",
+    "gatsby",
+    "typescript",
+    "graphql",
+    "nodejs",
+    "portfolio"
+  ],
+  "author": "Hamza Hassan <hassanhamza0101@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hhssnn/hhssnn"
+  }
+}
