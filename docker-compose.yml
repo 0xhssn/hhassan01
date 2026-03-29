@@ -1,0 +1,217 @@
+# ============================================================
+#  Multi-language Development Environment
+#  Stack: Node.js (NestJS / Next.js) · Ruby (Rails) ·
+#         Python (Gatsby / scripts) · Go (Gin)
+# ============================================================
+#
+#  Quick start:
+#    docker compose up            # start all services
+#    docker compose up node       # start a single service
+#    docker compose run --rm node bash   # open a shell
+#
+#  Ports (host → container):
+#    3000  → node   (NestJS API / Next.js dev server)
+#    3001  → ruby   (Rails server)
+#    8000  → python (scripts / Gatsby preview on :8000)
+#    8080  → go     (Gin HTTP server)
+#    5432  → postgres
+#    6379  → redis
+# ============================================================
+
+version: "3.9"
+
+# --------------- shared helpers ---------------
+x-restart: &restart
+  restart: unless-stopped
+
+x-logging: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+# --------------- named volumes ----------------
+volumes:
+  postgres_data:
+  redis_data:
+  node_modules_cache:
+  bundle_cache:
+  pip_cache:
+  go_pkg_cache:
+
+# --------------- networks ---------------------
+networks:
+  dev_net:
+    driver: bridge
+
+# ============================================================
+services:
+
+  # ----------------------------------------------------------
+  # Node.js — NestJS API + Next.js front-end
+  # ----------------------------------------------------------
+  node:
+    build:
+      context: ./docker/node
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: "20"
+    container_name: dev_node
+    <<: [*restart, *logging]
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      # Add project-specific env vars in .env (see .env.example)
+      DATABASE_URL: postgres://devuser:devpass@postgres:5432/devdb
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3000:3000"   # NestJS / Next.js dev
+      - "3001:3001"   # optional second port (e.g. storybook)
+    volumes:
+      - .:/workspace:cached          # mount repo root
+      - node_modules_cache:/workspace/node_modules
+    working_dir: /workspace
+    command: sleep infinity          # keep alive; override per project
+    networks:
+      - dev_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ----------------------------------------------------------
+  # Ruby — Ruby on Rails
+  # ----------------------------------------------------------
+  ruby:
+    build:
+      context: ./docker/ruby
+      dockerfile: Dockerfile
+      args:
+        RUBY_VERSION: "3.3"
+    container_name: dev_ruby
+    <<: [*restart, *logging]
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://devuser:devpass@postgres:5432/devdb
+      REDIS_URL: redis://redis:6379
+      BUNDLE_PATH: /bundle
+    ports:
+      - "3001:3001"   # Rails server (mapped to 3001 on host)
+    volumes:
+      - .:/workspace:cached
+      - bundle_cache:/bundle
+    working_dir: /workspace
+    command: sleep infinity
+    networks:
+      - dev_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ----------------------------------------------------------
+  # Python — scripts, data tooling, Gatsby preview
+  # ----------------------------------------------------------
+  python:
+    build:
+      context: ./docker/python
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.12"
+    container_name: dev_python
+    <<: [*restart, *logging]
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_NO_CACHE_DIR: "off"
+      DATABASE_URL: postgres://devuser:devpass@postgres:5432/devdb
+    ports:
+      - "8000:8000"   # Gatsby preview / FastAPI / Flask
+    volumes:
+      - .:/workspace:cached
+      - pip_cache:/root/.cache/pip
+    working_dir: /workspace
+    command: sleep infinity
+    networks:
+      - dev_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ----------------------------------------------------------
+  # Go — Gin HTTP server
+  # ----------------------------------------------------------
+  go:
+    build:
+      context: ./docker/go
+      dockerfile: Dockerfile
+      args:
+        GO_VERSION: "1.22"
+    container_name: dev_go
+    <<: [*restart, *logging]
+    environment:
+      GO111MODULE: "on"
+      GOPATH: /go
+      CGO_ENABLED: "0"
+      DATABASE_URL: postgres://devuser:devpass@postgres:5432/devdb
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8080:8080"   # Gin server
+    volumes:
+      - .:/workspace:cached
+      - go_pkg_cache:/go/pkg/mod
+    working_dir: /workspace
+    command: sleep infinity
+    networks:
+      - dev_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ----------------------------------------------------------
+  # PostgreSQL — shared relational database
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: dev_postgres
+    <<: [*restart, *logging]
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: devdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dev_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devuser -d devdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ----------------------------------------------------------
+  # Redis — cache / queues / sessions
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: dev_redis
+    <<: [*restart, *logging]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - dev_net
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

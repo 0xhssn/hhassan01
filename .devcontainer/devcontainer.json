@@ -1,0 +1,169 @@
+{
+  // ============================================================
+  //  VS Code / GitHub Codespaces devcontainer
+  //  All-in-one: Node.js · Ruby · Python · Go
+  //
+  //  Open this repo in VS Code → "Reopen in Container"
+  //  or push to GitHub and click "Code → Codespaces → New"
+  // ============================================================
+  "name": "Multi-Language Dev Environment",
+
+  // Build from the local Dockerfile inside .devcontainer/
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "NODE_VERSION": "20",
+      "RUBY_VERSION": "3.3.0",
+      "PYTHON_VERSION": "3.12",
+      "GO_VERSION": "1.22.4"
+    }
+  },
+
+  // Run as the non-root "vscode" user
+  "remoteUser": "vscode",
+
+  // Mount the repo at /workspace
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  // ---- Docker-in-Docker (optional) -------------------------
+  // Uncomment if you want to run docker commands inside the container
+  // "features": {
+  //   "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  // },
+
+  // ---- Port forwarding -------------------------------------
+  "forwardPorts": [
+    3000,  // Node.js / NestJS / Next.js
+    3001,  // Rails
+    8000,  // Python / Gatsby
+    8080,  // Go / Gin
+    5432,  // PostgreSQL (if running locally)
+    6379   // Redis (if running locally)
+  ],
+
+  "portsAttributes": {
+    "3000": { "label": "Node.js", "onAutoForward": "notify" },
+    "3001": { "label": "Ruby (Rails)", "onAutoForward": "notify" },
+    "8000": { "label": "Python / Gatsby", "onAutoForward": "notify" },
+    "8080": { "label": "Go (Gin)", "onAutoForward": "notify" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "6379": { "label": "Redis", "onAutoForward": "silent" }
+  },
+
+  // ---- VS Code extensions ----------------------------------
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // ── TypeScript / JavaScript ──────────────────────────
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "christian-kohler.path-intellisense",
+        "bradlc.vscode-tailwindcss",
+        // ── Ruby ────────────────────────────────────────────
+        "Shopify.ruby-lsp",
+        "KoichiSasada.vscode-rdbg",
+        // ── Python ──────────────────────────────────────────
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        // ── Go ──────────────────────────────────────────────
+        "golang.go",
+        // ── Docker & containers ──────────────────────────────
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        // ── Database ─────────────────────────────────────────
+        "cweijan.vscode-postgresql-client2",
+        // ── General productivity ─────────────────────────────
+        "eamodio.gitlens",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "ms-vscode.makefile-tools",
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml"
+      ],
+
+      "settings": {
+        // ── Editor ────────────────────────────────────────────
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.rulers": [80, 120],
+        "editor.bracketPairColorization.enabled": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+        // ── Files ─────────────────────────────────────────────
+        "files.eol": "\n",
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.bundle": true,
+          "**/__pycache__": true,
+          "**/.mypy_cache": true
+        },
+
+        // ── TypeScript / JavaScript ────────────────────────────
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+
+        // ── Ruby ──────────────────────────────────────────────
+        "[ruby]": {
+          "editor.defaultFormatter": "Shopify.ruby-lsp",
+          "editor.tabSize": 2
+        },
+        "rubyLsp.rubyVersionManager": {
+          "identifier": "rbenv"
+        },
+
+        // ── Python ────────────────────────────────────────────
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.tabSize": 4
+        },
+        "python.defaultInterpreterPath": "/usr/local/pyenv/shims/python",
+        "python.formatting.provider": "none",
+        "ruff.enable": true,
+
+        // ── Go ────────────────────────────────────────────────
+        "[go]": {
+          "editor.defaultFormatter": "golang.go",
+          "editor.tabSize": 4,
+          "editor.insertSpaces": false
+        },
+        "go.useLanguageServer": true,
+        "go.lintTool": "golangci-lint",
+        "go.formatTool": "goimports",
+        "go.toolsManagement.autoUpdate": false,
+
+        // ── Terminal ──────────────────────────────────────────
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+
+  // ---- Lifecycle hooks ------------------------------------
+  // Runs once when the container is first created
+  "onCreateCommand": "bash /workspace/.devcontainer/on-create.sh",
+
+  // Runs every time the container starts
+  "postStartCommand": "bash /workspace/.devcontainer/post-start.sh",
+
+  // ---- Environment variables ------------------------------
+  "remoteEnv": {
+    "NODE_ENV": "development",
+    "RAILS_ENV": "development",
+    "PYTHONUNBUFFERED": "1",
+    "GO111MODULE": "on",
+    "CGO_ENABLED": "0"
+  }
+}

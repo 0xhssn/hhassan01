@@ -1,0 +1,117 @@
+# ============================================================
+#  .gitignore — multi-language monorepo
+# ============================================================
+
+# ---- Secrets / environment --------------------------------
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+secrets/
+
+# ---- Node.js ---------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.npm/
+dist/
+build/
+.next/
+.cache/
+.parcel-cache/
+out/
+coverage/
+*.tsbuildinfo
+
+# ---- Ruby ------------------------------------------------
+.bundle/
+vendor/bundle/
+log/
+tmp/
+*.log
+*.pid
+*.sqlite3
+.byebug_history
+public/packs/
+public/assets/
+storage/
+.ruby-version
+
+# ---- Python ----------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.env/
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+*.manifest
+*.spec
+.ipynb_checkpoints
+
+# ---- Go --------------------------------------------------
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.sum  # keep this if you want reproducible builds — remove line to track it
+
+# ---- Docker ----------------------------------------------
+# (Dockerfiles are tracked; ignore local overrides)
+docker-compose.override.yml
+
+# ---- Editors & OS ----------------------------------------
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# ---- Databases -------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+
+# ---- Logs ------------------------------------------------
+logs/
+*.log
+npm-debug.log*
