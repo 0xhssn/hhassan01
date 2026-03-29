@@ -1,0 +1,140 @@
+{
+  "name": "db-test-utils",
+  "version": "1.0.0",
+  "description": "Database testing utilities for PostgreSQL, MySQL, and MongoDB with Docker, Prisma, and Mongoose",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:postgres": "jest --testPathPattern=postgres",
+    "test:mysql": "jest --testPathPattern=mysql",
+    "test:mongo": "jest --testPathPattern=mongo",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "db:up": "docker compose -f docker/docker-compose.test.yml up -d",
+    "db:down": "docker compose -f docker/docker-compose.test.yml down -v",
+    "db:reset": "docker compose -f docker/docker-compose.test.yml down -v && docker compose -f docker/docker-compose.test.yml up -d",
+    "db:logs": "docker compose -f docker/docker-compose.test.yml logs -f",
+    "db:ps": "docker compose -f docker/docker-compose.test.yml ps",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:postgres": "DATABASE_URL=$POSTGRES_TEST_URL prisma migrate dev --schema=prisma/schema.postgres.prisma",
+    "prisma:migrate:mysql": "DATABASE_URL=$MYSQL_TEST_URL prisma migrate dev --schema=prisma/schema.mysql.prisma",
+    "prisma:push:postgres": "DATABASE_URL=$POSTGRES_TEST_URL prisma db push --schema=prisma/schema.postgres.prisma",
+    "prisma:push:mysql": "DATABASE_URL=$MYSQL_TEST_URL prisma db push --schema=prisma/schema.mysql.prisma",
+    "prisma:studio:postgres": "DATABASE_URL=$POSTGRES_TEST_URL prisma studio --schema=prisma/schema.postgres.prisma",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "keywords": [
+    "testing",
+    "postgresql",
+    "mysql",
+    "mongodb",
+    "prisma",
+    "mongoose",
+    "docker",
+    "jest",
+    "database"
+  ],
+  "author": "Hamza Hassan",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "mongoose": "^8.2.0",
+    "pg": "^8.11.3",
+    "mysql2": "^3.9.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "@types/pg": "^8.11.2",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "jest": "^29.7.0",
+    "prettier": "^3.2.5",
+    "prisma": "^5.10.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.2",
+    "faker": "^6.6.6",
+    "@faker-js/faker": "^8.4.1",
+    "dockerode": "^4.0.2",
+    "@types/dockerode": "^3.3.23"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.json"
+        }
+      ]
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/index.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "globalSetup": "<rootDir>/src/testing/jest.global-setup.ts",
+    "globalTeardown": "<rootDir>/src/testing/jest.global-teardown.ts",
+    "setupFilesAfterFramework": [],
+    "setupFilesAfterEach": [],
+    "setupFiles": [
+      "<rootDir>/src/testing/jest.env-setup.ts"
+    ],
+    "testTimeout": 60000,
+    "verbose": true,
+    "projects": [
+      {
+        "displayName": "unit",
+        "testMatch": [
+          "<rootDir>/tests/unit/**/*.test.ts"
+        ],
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "setupFiles": [
+          "<rootDir>/src/testing/jest.env-setup.ts"
+        ]
+      },
+      {
+        "displayName": "integration",
+        "testMatch": [
+          "<rootDir>/tests/integration/**/*.test.ts"
+        ],
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "globalSetup": "<rootDir>/src/testing/jest.global-setup.ts",
+        "globalTeardown": "<rootDir>/src/testing/jest.global-teardown.ts",
+        "setupFiles": [
+          "<rootDir>/src/testing/jest.env-setup.ts"
+        ],
+        "testTimeout": 60000
+      }
+    ]
+  }
+}
