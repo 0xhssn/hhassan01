@@ -1,0 +1,51 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "input": {
+    "maxFileSize": 52428800
+  },
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml",
+    "parsableStyle": false,
+    "compress": false,
+    "headerText": "This packed representation of Hamza Hassan's repository profile is intended for AI-assisted analysis, code review, and onboarding. Treat all contents as read-only context.",
+    "instructionFilePath": "repomix-instructions.md",
+    "fileSummary": true,
+    "directoryStructure": true,
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "showLineNumbers": true,
+    "copyToClipboard": false,
+    "topFilesLength": 5,
+    "git": {
+      "sortByChangedFiles": true
+    }
+  },
+  "include": [
+    "**/*.md",
+    "**/*.json",
+    "**/*.xml",
+    "**/*.ts",
+    "**/*.js",
+    "**/*.py",
+    "**/*.rb",
+    "**/*.go"
+  ],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "repomix-output*.xml",
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      "**/*.lock",
+      "**/*.log"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}
